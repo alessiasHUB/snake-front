@@ -50,7 +50,7 @@ body {
 	padding: 10px;
 	font-size: 0.9em;
 	color: white;
-	box-shadow: 4px 4px 0px 0px white;
+	/* box-shadow: 4px 4px 0px 0px white; */
 	font-family: 'Press Start 2P', cursive;
 	font-weight: 700;
 	letter-spacing: 5px;
