@@ -1,10 +1,13 @@
 import React, { useEffect, useRef, useState } from "react";
 import "./App.css";
-import AppleLogo from "./applePixels.png";
 import useInterval from "./useInterval";
+import AppleRed from "./img/apple-red.png";
+import AppleGreen from "./img/apple-green.png";
+// import AppleYellow from "./img/apple-yellow.png";
+import AppleBlue from "./img/apple-blue.png";
 
-const canvasX = 1200;
-const canvasY = 1200;
+const screenWidth = 1200;
+const screenHeight = 1200;
 const initialSnake = [
   [4, 10],
   [4, 10],
@@ -27,6 +30,9 @@ function App() {
   const [delay, setDelay] = useState<number | null>(null);
   const [gameOver, setGameOver] = useState(false);
   const [score, setScore] = useState(0);
+  const [AppleLogo, setAppleLogo] = useState<string>(AppleRed);
+  const [eatenApples, setEatenApples] = useState<string[]>([]);
+  const [canvas, setCanvas] = useState<string[]>(['red','red']);
 
   useInterval(() => runGame(), delay);
 
@@ -38,12 +44,15 @@ function App() {
       if (ctx) {
         ctx.setTransform(scale, 0, 0, scale, 0, 0);
         ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
-        ctx.fillStyle = "#a3d001";
+        if (eatenApples[0]===AppleRed) ctx.fillStyle = "#FF5100";
+        else if (eatenApples[0]===AppleGreen) ctx.fillStyle = "#68FF00";
+        else if (eatenApples[0]===AppleBlue) ctx.fillStyle = "#00DCFF";
+        // else if (eatenApples[0]===AppleYellow) ctx.fillStyle = "#FBFF00";
         snake.forEach(([x, y]) => ctx.fillRect(x, y, 1, 1));
         ctx.drawImage(fruit, apple[0], apple[1], 1, 1);
       }
     }
-  }, [snake, apple, gameOver]);
+  }, [AppleLogo, snake, apple, gameOver, eatenApples]);
 
   function handleSetScore() {
     if (score > Number(localStorage.getItem("snakeScore"))) {
@@ -59,24 +68,99 @@ function App() {
     setScore(0);
     setGameOver(false);
   }
-  // add function for position outside of canvas
-  // make it able to go through the wall
+
   function checkCollision(head: number[]) {
-    for (let i = 0; i < head.length; i++) {
-      if (head[i] < 0 || head[i] * scale >= canvasX) return true;
+    // Green apple: snake can travel through walls
+    if (eatenApples[0] === AppleGreen) {
+      for (let i = 0; i < head.length; i++) {
+        if (eatenApples[0] === AppleGreen) {
+          // if the snake goes through the left/right wall
+          if (head[0] < 0) {
+            head[0] = screenWidth / scale - 1;
+          } else if (head[0] * scale >= screenWidth) {
+            head[0] = 0;
+          }
+          // if the snake goes through the top/bottom wall
+          if (head[1] < 0) {
+            head[1] = screenHeight / scale - 1;
+          } else if (head[1] * scale >= screenHeight) {
+            head[1] = 0;
+          }
+        }
+      }
+      // when the snake 'eat' itsels -> Game Over!
+      for (const s of snake) {
+        if (head[0] === s[0] && head[1] === s[1]) return true;
+      }
+      return false;
     }
-    for (const s of snake) {
-      if (head[0] === s[0] && head[1] === s[1]) return true;
+
+    // Blue apple: snake can go through itself
+    if (eatenApples[0] === AppleBlue){
+      for (let i = 0; i < head.length; i++) {
+        // if the snake hits a wall -> Game Over!
+        if (head[i] < 0 || head[i] * scale >= screenWidth) return true;
+      }
+      for (const s of snake) {
+        // if the snake runs into itself -> continue game
+        if (head[0] === s[0] && head[1] === s[1]) return false;
+      }
+      return false;
     }
-    return false;
+    
+    // Red apple: snake cannot hit walls or itself
+    if (eatenApples[0] === AppleRed){
+      for (let i = 0; i < head.length; i++) {
+        // snake hits wall -> Game Over!
+        if (head[i] < 0 || head[i] * scale >= screenWidth) return true;
+      }
+      for (const s of snake) {
+        // snake hits itself -> Game Over!
+        if (head[0] === s[0] && head[1] === s[1]) return true;
+      }
+      return false;
+    }
+
+    // Yellow apple: ???
+    // if (eatenApples[0] === AppleYellow){
+    //   for (let i = 0; i < head.length; i++) {
+    //     // snake hits wall -> Game Over!
+    //     if (head[i] < 0 || head[i] * scale >= screenWidth) return true;
+    //   }
+    //   for (const s of snake) {
+    //     // snake hits itself -> Game Over!
+    //     if (head[0] === s[0] && head[1] === s[1]) return true;
+    //   }
+    //   return false;
+    // }
+    
   }
 
   function appleAte(newSnake: number[][]) {
-    let coord = apple.map(() => Math.floor((Math.random() * canvasX) / scale));
+    let coord = apple.map(() => Math.floor((Math.random() * screenWidth) / scale));
     if (newSnake[0][0] === apple[0] && newSnake[0][1] === apple[1]) {
       let newApple = coord;
       setScore(score + 1);
       setApple(newApple);
+
+      // the red apple is most likely and blue least
+      // yellow is unused.
+      let newAppleLogo = AppleRed;
+      let num = Math.floor((Math.random() * 20))
+      if ( num > 5){
+        num === 17 
+          ? newAppleLogo=AppleGreen
+          : newAppleLogo=AppleBlue;
+      }
+      let color = 'red'
+      if (newAppleLogo === AppleGreen){
+        color = 'green'
+      } else if (newAppleLogo === AppleBlue){
+        color = 'blue'
+      }
+      setAppleLogo(newAppleLogo);
+      setEatenApples(prevApples => [AppleLogo,...prevApples])
+      setCanvas(prev => [color,...prev])
       return true;
     }
     return false;
@@ -85,9 +169,9 @@ function App() {
   function runGame() {
     const newSnake = [...snake];
     const newSnakeHead = [
-      newSnake[0][0] + direction[0],
-      newSnake[0][1] + direction[1],
-    ];
+      (newSnake[0][0] + direction[0] ),
+      (newSnake[0][1] + direction[1] ),
+    ]
     newSnake.unshift(newSnakeHead);
     if (checkCollision(newSnakeHead)) {
       setDelay(null);
@@ -117,19 +201,16 @@ function App() {
         setDirection([0, 1]);
         break;
     }
-    if (direction === "ArrowLeft"){
-      
-    }
   }
 
   return (
     <div onKeyDown={(e) => changeDirection(e)}>
       <img id="fruit" src={AppleLogo} alt="fruit" width="30" />
       <canvas
-        className="playArea"
+        className={canvas[1]}
         ref={canvasRef}
-        width={`${canvasX}px`}
-        height={`${canvasY}px`}
+        width={`${screenWidth}px`}
+        height={`${screenHeight}px`}
       />
       {gameOver && <div className="gameOver">Game Over</div>}
       <button onClick={play} className="playButton">

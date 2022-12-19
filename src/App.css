@@ -4,7 +4,22 @@ body {
 	font-family: 'Press Start 2P', cursive;
 }
 
-.playArea {
+.red {
+	width: 585px;
+	height: 440px;
+	position: fixed;
+	top: 43.2%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+  	background-color: black;
+  	
+	/*brick wall border*/
+	border: 10px solid transparent;  /* create a border and make it transparent */
+	-webkit-border-image: url(./img/brick-wall1.png) 30 30 round; /* use the brick wall image as the border image */
+	-o-border-image: url(./img/brick-wall1.png) 30 30 round;
+	border-image: url(./img/brick-wall1.png) 30 30 round;
+}
+.green {
 	border: 5px solid transparent;
 	width: 585px;
 	height: 440px;
@@ -12,24 +27,37 @@ body {
 	top: 43.2%;
 	left: 50%;
 	transform: translate(-50%, -50%);
-  background-color: black;
-  border-style: groove;
-  border-color: rgb(173, 174, 175);
-  border-width: 20px;
+  	background-color: black;
+  	border-width: 0px;
+}
+.blue {
+	width: 585px;
+	height: 440px;
+	position: fixed;
+	top: 43.2%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+  	background-color: black;
+
+	/*brick wall border*/
+	border: 10px solid transparent;  /* create a border and make it transparent */
+	-webkit-border-image: url(./img/brick-wall1.png) 30 30 round; /* use the brick wall image as the border image */
+	-o-border-image: url(./img/brick-wall1.png) 30 30 round;
+	border-image: url(./img/brick-wall1.png) 30 30 round;
 }
 
 #fruit {
 	display: none;
 }
 
-.monitor {
+/* .monitor {
 	width: 800px;
 	height: 800px;
 	position: fixed;
 	top: 50%;
 	left: 50%;
 	transform: translate(-50%, -50%);
-}
+} */
 
 .gameOver {
 	position: fixed;
@@ -45,9 +73,9 @@ body {
 	left: 50%;
 	transform: translate(-50%, -50%);
 	color: white;
-	background: #502c7b;
-	border: 2px solid white;
-	padding: 10px;
+	background: #042677;
+	border: 0px solid white;
+	padding: 14px;
 	font-size: 0.9em;
 	color: white;
 	/* box-shadow: 4px 4px 0px 0px white; */
