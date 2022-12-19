@@ -102,10 +102,10 @@ function App() {
 
   function changeDirection(e: React.KeyboardEvent<HTMLDivElement>) {
     switch (e.key) {
-      case "ArrowLeft":
-        if (direction !== [1, 0]){
+      case "ArrowLeft":/*
+        if (direction !== [1, 0]){*/
         setDirection([-1, 0]);
-        }
+        /*}*/
         break;
       case "ArrowUp":
         setDirection([0, -1]);
