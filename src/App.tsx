@@ -59,7 +59,8 @@ function App() {
     setScore(0);
     setGameOver(false);
   }
-
+  // add function for position outside of canvas
+  // make it able to go through the wall
   function checkCollision(head: number[]) {
     for (let i = 0; i < head.length; i++) {
       if (head[i] < 0 || head[i] * scale >= canvasX) return true;
@@ -102,7 +103,9 @@ function App() {
   function changeDirection(e: React.KeyboardEvent<HTMLDivElement>) {
     switch (e.key) {
       case "ArrowLeft":
+        if (direction !== [1, 0]){
         setDirection([-1, 0]);
+        }
         break;
       case "ArrowUp":
         setDirection([0, -1]);
@@ -113,6 +116,9 @@ function App() {
       case "ArrowDown":
         setDirection([0, 1]);
         break;
+    }
+    if (direction === "ArrowLeft"){
+      
     }
   }
 
