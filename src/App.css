@@ -15,9 +15,9 @@ body {
   	
 	/*brick wall border*/
 	border: 10px solid transparent;  /* create a border and make it transparent */
-	-webkit-border-image: url(./img/brick-wall1.png) 30 30 round; /* use the brick wall image as the border image */
-	-o-border-image: url(./img/brick-wall1.png) 30 30 round;
-	border-image: url(./img/brick-wall1.png) 30 30 round;
+	-webkit-border-image: url(./img/brick-wall-red.png) 30 30 round; /* use the brick wall image as the border image */
+	-o-border-image: url(./img/brick-wall-red.png) 30 30 round;
+	border-image: url(./img/brick-wall-red.png) 30 30 round;
 }
 .green {
 	border: 5px solid transparent;
@@ -41,9 +41,9 @@ body {
 
 	/*brick wall border*/
 	border: 10px solid transparent;  /* create a border and make it transparent */
-	-webkit-border-image: url(./img/brick-wall1.png) 30 30 round; /* use the brick wall image as the border image */
-	-o-border-image: url(./img/brick-wall1.png) 30 30 round;
-	border-image: url(./img/brick-wall1.png) 30 30 round;
+	-webkit-border-image: url(./img/brick-wall-grey.png) 30 30 round; /* use the brick wall image as the border image */
+	-o-border-image: url(./img/brick-wall-grey.png) 30 30 round;
+	border-image: url(./img/brick-wall-grey.png) 30 30 round;
 }
 
 #fruit {

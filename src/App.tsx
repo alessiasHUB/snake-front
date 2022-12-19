@@ -19,7 +19,7 @@ const timeDelay = 110;
 
 // TO DO
 // 1. create function for levels, faster snake for each level
-// 2. make sure command that is the opposite of direction will 
+// 2. make sure command that is the opposite of direction will
 //    be ignored so you don't die
 
 function App() {
@@ -32,7 +32,7 @@ function App() {
   const [score, setScore] = useState(0);
   const [AppleLogo, setAppleLogo] = useState<string>(AppleRed);
   const [eatenApples, setEatenApples] = useState<string[]>([]);
-  const [canvas, setCanvas] = useState<string[]>(['red','red']);
+  const [canvas, setCanvas] = useState<string[]>(["red", "red"]);
 
   useInterval(() => runGame(), delay);
 
@@ -44,9 +44,9 @@ function App() {
       if (ctx) {
         ctx.setTransform(scale, 0, 0, scale, 0, 0);
         ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
-        if (eatenApples[0]===AppleRed) ctx.fillStyle = "#FF5100";
-        else if (eatenApples[0]===AppleGreen) ctx.fillStyle = "#68FF00";
-        else if (eatenApples[0]===AppleBlue) ctx.fillStyle = "#00DCFF";
+        if (eatenApples[0] === AppleRed) ctx.fillStyle = "#FF5100";
+        else if (eatenApples[0] === AppleGreen) ctx.fillStyle = "#68FF00";
+        else if (eatenApples[0] === AppleBlue) ctx.fillStyle = "#00DCFF";
         // else if (eatenApples[0]===AppleYellow) ctx.fillStyle = "#FBFF00";
         snake.forEach(([x, y]) => ctx.fillRect(x, y, 1, 1));
         ctx.drawImage(fruit, apple[0], apple[1], 1, 1);
@@ -96,7 +96,7 @@ function App() {
     }
 
     // Blue apple: snake can go through itself
-    if (eatenApples[0] === AppleBlue){
+    if (eatenApples[0] === AppleBlue) {
       for (let i = 0; i < head.length; i++) {
         // if the snake hits a wall -> Game Over!
         if (head[i] < 0 || head[i] * scale >= screenWidth) return true;
@@ -107,9 +107,9 @@ function App() {
       }
       return false;
     }
-    
+
     // Red apple: snake cannot hit walls or itself
-    if (eatenApples[0] === AppleRed){
+    if (eatenApples[0] === AppleRed) {
       for (let i = 0; i < head.length; i++) {
         // snake hits wall -> Game Over!
         if (head[i] < 0 || head[i] * scale >= screenWidth) return true;
@@ -133,11 +133,12 @@ function App() {
     //   }
     //   return false;
     // }
-    
   }
 
   function appleAte(newSnake: number[][]) {
-    let coord = apple.map(() => Math.floor((Math.random() * screenWidth) / scale));
+    let coord = apple.map(() =>
+      Math.floor((Math.random() * screenWidth) / scale)
+    );
     if (newSnake[0][0] === apple[0] && newSnake[0][1] === apple[1]) {
       let newApple = coord;
       setScore(score + 1);
@@ -146,21 +147,21 @@ function App() {
       // the red apple is most likely and blue least
       // yellow is unused.
       let newAppleLogo = AppleRed;
-      let num = Math.floor((Math.random() * 20))
-      if ( num > 5){
-        num === 17 
-          ? newAppleLogo=AppleGreen
-          : newAppleLogo=AppleBlue;
+      let num = Math.floor(Math.random() * 20);
+      if (num > 10) {
+        num % 3 !== 0
+          ? (newAppleLogo = AppleGreen)
+          : (newAppleLogo = AppleBlue);
       }
-      let color = 'red'
-      if (newAppleLogo === AppleGreen){
-        color = 'green'
-      } else if (newAppleLogo === AppleBlue){
-        color = 'blue'
+      let color = "red";
+      if (newAppleLogo === AppleGreen) {
+        color = "green";
+      } else if (newAppleLogo === AppleBlue) {
+        color = "blue";
       }
       setAppleLogo(newAppleLogo);
-      setEatenApples(prevApples => [AppleLogo,...prevApples])
-      setCanvas(prev => [color,...prev])
+      setEatenApples((prevApples) => [AppleLogo, ...prevApples]);
+      setCanvas((prev) => [color, ...prev]);
       return true;
     }
     return false;
@@ -169,9 +170,9 @@ function App() {
   function runGame() {
     const newSnake = [...snake];
     const newSnakeHead = [
-      (newSnake[0][0] + direction[0] ),
-      (newSnake[0][1] + direction[1] ),
-    ]
+      newSnake[0][0] + direction[0],
+      newSnake[0][1] + direction[1],
+    ];
     newSnake.unshift(newSnakeHead);
     if (checkCollision(newSnakeHead)) {
       setDelay(null);
@@ -186,8 +187,8 @@ function App() {
 
   function changeDirection(e: React.KeyboardEvent<HTMLDivElement>) {
     switch (e.key) {
-      case "ArrowLeft":/*
-        if (direction !== [1, 0]){*/
+      case "ArrowLeft" /*
+        if (direction !== [1, 0]){*/:
         setDirection([-1, 0]);
         /*}*/
         break;
