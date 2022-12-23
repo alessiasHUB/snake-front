@@ -296,8 +296,6 @@ function App() {
 
   return (
     <>
-      {/* {gameOver ? <WhenHighscore score={score} highscores={highscores}/> :
-      <> */}
         <div onKeyDown={(e) => changeDirection(e)}>
           <img id="fruit" src={AppleLogo} alt="fruit" width="30" />
           <canvas
@@ -310,17 +308,14 @@ function App() {
           {gameOver && (
             <WhenHighscore score={score} highscores={highscores} />
           )}
-          {/* play button went here before */}
+          <button onClick={play} className="playButton">
+            Play
+          </button>
           <div className="scoreBox">
             <h2>Score: {score}</h2>
             <h2>High Score: {localStorage.getItem("snakeScore")}</h2>
           </div>
         </div>
-      {/* </>
-      } */}
-      <button onClick={play} className="playButton">
-          Play
-      </button>
     </>
   );
 }
