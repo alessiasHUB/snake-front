@@ -68,12 +68,12 @@ function App() {
         ctx.drawImage(fruit, apple[0], apple[1], 1, 1);
       }
     } 
-    getHighscores()
-  }, [AppleLogo, snake, apple, gameOver, eatenApples, highscores, input, formVis]);
+    // getHighscores()
+  }, [AppleLogo, snake, apple, gameOver, eatenApples, input, formVis]);
 
   //GET highscores from API
   const getHighscores = async () => {
-    console.log("getToDoArr works");
+    console.log("getHighscores works");
     try {
       const response = await axios.get(url + "/items");
       setHighscores(response.data);
@@ -86,19 +86,23 @@ function App() {
   const postHighscores = async (newName: string, newScore: number) => {
     console.log("postHighscores function is running!");
     try {
-      await axios.post(url + "/items", { name: newName, score: newScore });
+      await axios.post(url + "/items", { name: newName, highscore: newScore });
     } catch (error) {
       console.error("Woops... issue with POST request: ", error);
     }
   };
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const handleSubmit = () => {
     console.log(input);
     postHighscores(input, score);
     getHighscores();
     setInput("");
-    setFormVis(false)
   };
+  function handleKeyDown(e: React.KeyboardEvent) {
+    if (e.key === 'Enter') {
+      handleSubmit();
+      setFormVis(false);
+    }
+  }
 
   function handleSetScore() {
     if (score > Number(localStorage.getItem("snakeScore"))) {
@@ -113,6 +117,7 @@ function App() {
     setDelay(timeDelay);
     setScore(0);
     setGameOver(false);
+    setFormVis(false);
   }
 
   function checkCollision(head: number[]) {
@@ -227,7 +232,13 @@ function App() {
     if (checkCollision(newSnakeHead)) {
       setDelay(null);
       setGameOver(true);
+      console.log('game over')
+      if (highscores.length < 10 || score > highscores[9].highscore) {
+        setFormVis(true);
+        console.log('setFormVis is true');
+      }
       handleSetScore();
+      getHighscores();
     }
     if (!appleAte(newSnake)) {
       newSnake.pop();
@@ -254,45 +265,45 @@ function App() {
     }
   }
 
-  function WhenHighscore(props: {score:number, highscores:Highscore[]}):JSX.Element {
-    const { score, highscores } = props;
-    if (gameOver && highscores.length > 9 && score > highscores[9].highscore) {
-      setFormVis(true)
-    } else if (gameOver && highscores.length < 9) {
-      setFormVis(true)
-    } else if (gameOver) {
-      setFormVis(false)
-    }
-
-    return (
-      <>
-      <div>
-        <h1>Highscores</h1>
-        <ol>
-          {highscores.slice(0,10).map((el) => <li key={el.id}>{el.name} &&&&&& {el.highscore}</li>)}
-        </ol>
-      </div>
-      {formVis 
-      &&
-      <>
-        <h1 className="gameOver" >Congrats you made it on to the top highscores!</h1>
-        <form id='form' onSubmit={handleSubmit}>
-          <input
-            type="text"
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            placeholder="Write your name"
-          />
-          <span> </span>
-          <button type="submit" className="add-button">
-            +
-          </button>
-        </form>
-      </>
-      }
-      </>
-    );
-  }
+  // function WhenHighscore(props: {score:number, highscores:Highscore[]}):JSX.Element {
+  //   const { score, highscores } = props;
+  //   if (gameOver && highscores.length > 9 && score > highscores[9].highscore) {
+  //     setFormVis(true)
+  //   } else if (gameOver && highscores.length < 9) {
+  //     setFormVis(true)
+  //   } else if (gameOver) {
+  //     setFormVis(false)
+  //   }
+  //   return (
+  //     <>
+  //     <div>
+  //       <h1>Highscores</h1>
+  //       <ol>
+  //         {highscores.slice(0,10).map((el) => <li key={el.id}>{el.name}  {el.highscore}</li>)}
+  //       </ol>
+  //     </div>
+  //     {formVis 
+  //     &&
+  //     <>
+  //       <h1 className="gameOver" >Congrats you made it on to the top highscores!</h1>
+  //       {/* <form id='form' onSubmit={handleSubmit}> */}
+  //         <input
+  //           type="text"
+  //           value={input}
+  //           onChange={(e) => setInput(e.target.value)}
+  //           onKeyDown={handleKeyDown}
+  //           placeholder="Write your name"
+  //         />
+  //         {/* <span> </span>
+  //         <button type="submit" className="add-button">
+  //           +
+  //         </button>
+  //       </form> */}
+  //     </>
+  //     }
+  //     </>
+  //   );
+  // }
 
   return (
     <>
@@ -306,8 +317,41 @@ function App() {
           />
           {/* {gameOver && <div className="gameOver">Game Over</div>} */}
           {gameOver && (
-            <WhenHighscore score={score} highscores={highscores} />
+            <div className="highscoreList">
+              <h1>Highscores</h1>
+              <table className="highscoreTable">
+                <tbody>
+                  {highscores.slice(0, 10).map((el, index) => (
+                    <tr key={index}>
+                      <td>{index + 1}</td>
+                      <td>{el.name}</td>
+                      <td>{el.highscore}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           )}
+          {formVis 
+            &&
+            <div>
+              <h1 className="inputHighscoreText" >Congrats you made it on to the highscores!</h1>
+              {/* <form id='form' onSubmit={handleSubmit}> */}
+                <input
+                  type="text"
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  onKeyDown={handleKeyDown}
+                  placeholder="Write your name"
+                  className="inputHighscore"
+                />
+                {/* <span> </span>
+                <button type="submit" className="add-button">
+                  +
+                </button>
+              </form> */}
+            </div>
+            }
           <button onClick={play} className="playButton">
             Play
           </button>
