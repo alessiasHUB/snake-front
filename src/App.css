@@ -131,7 +131,7 @@ h2 {
   top: 70%;
   left: 50%;
   transform: translate(-50%, -50%);
-  color: rgb(255, 255, 255);
+  color: rgb(0, 0, 0);
   font-size: 20px;
   text-align: center;
 }
