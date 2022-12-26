@@ -5,6 +5,7 @@ import AppleRed from "./img/apple-red.png";
 import AppleGreen from "./img/apple-green.png";
 import AppleYellow from "./img/apple-yellow.png";
 import AppleBlue from "./img/apple-blue.png";
+import axios from "axios";
 
 const screenWidth = 1200;
 const screenHeight = 1200;
@@ -17,6 +18,17 @@ const scale = 50;
 // bigger number = slower snake
 const timeDelay = 110;
 
+interface Highscore {
+  id: number;
+  highscore: number;
+  name: string;
+}
+
+const url =
+  process.env.NODE_ENV === "production"
+    ? "https://snake-back.onrender.com"
+    : "http://localhost:4000";
+
 // TO DO
 // 1. create function for levels, faster snake for each level
 // 2. make sure command that is the opposite of direction will
@@ -27,12 +39,16 @@ function App() {
   const [snake, setSnake] = useState(initialSnake);
   const [apple, setApple] = useState(initialApple);
   const [direction, setDirection] = useState([0, -1]);
-  const [delay, setDelay] = useState<number | null>(null);
+  const [delay, setDelay] = useState<number | null>(timeDelay);
   const [gameOver, setGameOver] = useState(false);
   const [score, setScore] = useState(0);
   const [AppleLogo, setAppleLogo] = useState<string>(AppleRed);
   const [eatenApples, setEatenApples] = useState<string[]>([]);
   const [canvas, setCanvas] = useState<string[]>(["red", "red"]);
+// back end stuff
+  const [highscores, setHighscores] = useState<Highscore[]>([]);
+  const [input, setInput] = useState<string>("");
+  const [formVis, setFormVis] = useState<boolean>(false);
 
   useInterval(() => runGame(), delay);
 
@@ -51,8 +67,42 @@ function App() {
         snake.forEach(([x, y]) => ctx.fillRect(x, y, 1, 1));
         ctx.drawImage(fruit, apple[0], apple[1], 1, 1);
       }
+    } 
+    // getHighscores()
+  }, [AppleLogo, snake, apple, gameOver, eatenApples, input, formVis]);
+
+  //GET highscores from API
+  const getHighscores = async () => {
+    console.log("getHighscores works");
+    try {
+      const response = await axios.get(url + "/items");
+      setHighscores(response.data);
+    } catch (error) {
+      console.error("Woops... issue with GET request: ", error);
     }
-  }, [AppleLogo, snake, apple, gameOver, eatenApples]);
+  };
+
+  //POST highscore to API
+  const postHighscores = async (newName: string, newScore: number) => {
+    console.log("postHighscores function is running!");
+    try {
+      await axios.post(url + "/items", { name: newName, highscore: newScore });
+    } catch (error) {
+      console.error("Woops... issue with POST request: ", error);
+    }
+  };
+  const handleSubmit = () => {
+    console.log(input);
+    postHighscores(input, score);
+    getHighscores();
+    setInput("");
+  };
+  function handleKeyDown(e: React.KeyboardEvent) {
+    if (e.key === 'Enter') {
+      handleSubmit();
+      setFormVis(false);
+    }
+  }
 
   function handleSetScore() {
     if (score > Number(localStorage.getItem("snakeScore"))) {
@@ -67,6 +117,7 @@ function App() {
     setDelay(timeDelay);
     setScore(0);
     setGameOver(false);
+    setFormVis(false);
   }
 
   function checkCollision(head: number[]) {
@@ -181,7 +232,13 @@ function App() {
     if (checkCollision(newSnakeHead)) {
       setDelay(null);
       setGameOver(true);
+      console.log('game over')
+      if (highscores.length < 10 || score > highscores[9].highscore) {
+        setFormVis(true);
+        console.log('setFormVis is true');
+      }
       handleSetScore();
+      getHighscores();
     }
     if (!appleAte(newSnake)) {
       newSnake.pop();
@@ -208,24 +265,102 @@ function App() {
     }
   }
 
+  // function WhenHighscore(props: {score:number, highscores:Highscore[]}):JSX.Element {
+  //   const { score, highscores } = props;
+  //   if (gameOver && highscores.length > 9 && score > highscores[9].highscore) {
+  //     setFormVis(true)
+  //   } else if (gameOver && highscores.length < 9) {
+  //     setFormVis(true)
+  //   } else if (gameOver) {
+  //     setFormVis(false)
+  //   }
+  //   return (
+  //     <>
+  //     <div>
+  //       <h1>Highscores</h1>
+  //       <ol>
+  //         {highscores.slice(0,10).map((el) => <li key={el.id}>{el.name}  {el.highscore}</li>)}
+  //       </ol>
+  //     </div>
+  //     {formVis 
+  //     &&
+  //     <>
+  //       <h1 className="gameOver" >Congrats you made it on to the top highscores!</h1>
+  //       {/* <form id='form' onSubmit={handleSubmit}> */}
+  //         <input
+  //           type="text"
+  //           value={input}
+  //           onChange={(e) => setInput(e.target.value)}
+  //           onKeyDown={handleKeyDown}
+  //           placeholder="Write your name"
+  //         />
+  //         {/* <span> </span>
+  //         <button type="submit" className="add-button">
+  //           +
+  //         </button>
+  //       </form> */}
+  //     </>
+  //     }
+  //     </>
+  //   );
+  // }
+
   return (
-    <div onKeyDown={(e) => changeDirection(e)}>
-      <img id="fruit" src={AppleLogo} alt="fruit" width="30" />
-      <canvas
-        className={canvas[1]}
-        ref={canvasRef}
-        width={`${screenWidth}px`}
-        height={`${screenHeight}px`}
-      />
-      {gameOver && <div className="gameOver">Game Over</div>}
-      <button onClick={play} className="playButton">
-        Play
-      </button>
-      <div className="scoreBox">
-        <h2>Score: {score}</h2>
-        <h2>High Score: {localStorage.getItem("snakeScore")}</h2>
-      </div>
-    </div>
+    <>
+        <div onKeyDown={(e) => changeDirection(e)}>
+          <img id="fruit" src={AppleLogo} alt="fruit" width="30" />
+          <canvas
+            className={canvas[1]}
+            ref={canvasRef}
+            width={`${screenWidth}px`}
+            height={`${screenHeight}px`}
+          />
+          {/* {gameOver && <div className="gameOver">Game Over</div>} */}
+          {gameOver && (
+            <div className="highscoreList">
+              <h1>Highscores</h1>
+              <table className="highscoreTable">
+                <tbody>
+                  {highscores.slice(0, 10).map((el, index) => (
+                    <tr key={index}>
+                      <td>{index + 1}</td>
+                      <td>{el.name}</td>
+                      <td>{el.highscore}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+          {formVis 
+            &&
+            <div>
+              <h1 className="inputHighscoreText" >Congrats you made it on to the highscores!</h1>
+              {/* <form id='form' onSubmit={handleSubmit}> */}
+                <input
+                  type="text"
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  onKeyDown={handleKeyDown}
+                  placeholder="Write your name"
+                  className="inputHighscore"
+                />
+                {/* <span> </span>
+                <button type="submit" className="add-button">
+                  +
+                </button>
+              </form> */}
+            </div>
+            }
+          <button onClick={play} className="playButton">
+            Play
+          </button>
+          <div className="scoreBox">
+            <h2>Score: {score}</h2>
+            <h2>High Score: {localStorage.getItem("snakeScore")}</h2>
+          </div>
+        </div>
+    </>
   );
 }
 
