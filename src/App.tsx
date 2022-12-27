@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import "./App.css";
 import useInterval from "./useInterval";
 import AppleRed from "./img/apple-red.png";
@@ -29,11 +29,6 @@ const url =
     ? "https://snake-back.onrender.com"
     : "http://localhost:4000";
 
-// TO DO
-// 1. create function for levels, faster snake for each level
-// 2. make sure command that is the opposite of direction will
-//    be ignored so you don't die
-
 function App() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [snake, setSnake] = useState(initialSnake);
@@ -45,10 +40,30 @@ function App() {
   const [AppleLogo, setAppleLogo] = useState<string>(AppleRed);
   const [eatenApples, setEatenApples] = useState<string[]>([]);
   const [canvas, setCanvas] = useState<string[]>(["red", "red"]);
-// back end stuff
   const [highscores, setHighscores] = useState<Highscore[]>([]);
   const [input, setInput] = useState<string>("");
   const [formVis, setFormVis] = useState<boolean>(false);
+
+  //GET highscores from API
+  const getHighscores = useCallback(async () => {
+    console.log("getHighscores works");
+    try {
+      const response = await axios.get(url + "/items");
+      setHighscores(response.data);
+    } catch (error) {
+      console.error("Woops... issue with GET request: ", error);
+    }
+  }, []);
+
+  //POST highscore to API
+  const postHighscores = async (newName: string, newScore: number) => {
+    console.log("postHighscores function is running!");
+    try {
+      await axios.post(url + "/items", { name: newName, highscore: newScore });
+    } catch (error) {
+      console.error("Woops... issue with POST request: ", error);
+    }
+  };
 
   useInterval(() => runGame(), delay);
 
@@ -63,34 +78,25 @@ function App() {
         if (eatenApples[0] === AppleRed) ctx.fillStyle = "#FF5100";
         else if (eatenApples[0] === AppleGreen) ctx.fillStyle = "#68FF00";
         else if (eatenApples[0] === AppleBlue) ctx.fillStyle = "#00DCFF";
-        else if (eatenApples[0]===AppleYellow) ctx.fillStyle = "#FBFF00";
+        else if (eatenApples[0] === AppleYellow) ctx.fillStyle = "#FBFF00";
         snake.forEach(([x, y]) => ctx.fillRect(x, y, 1, 1));
         ctx.drawImage(fruit, apple[0], apple[1], 1, 1);
       }
-    } 
-    // getHighscores()
-  }, [AppleLogo, snake, apple, gameOver, eatenApples, input, formVis, highscores.length]);
-
-  //GET highscores from API
-  const getHighscores = async () => {
-    console.log("getHighscores works");
-    try {
-      const response = await axios.get(url + "/items");
-      setHighscores(response.data);
-    } catch (error) {
-      console.error("Woops... issue with GET request: ", error);
     }
-  };
-
-  //POST highscore to API
-  const postHighscores = async (newName: string, newScore: number) => {
-    console.log("postHighscores function is running!");
-    try {
-      await axios.post(url + "/items", { name: newName, highscore: newScore });
-    } catch (error) {
-      console.error("Woops... issue with POST request: ", error);
+    if (gameOver && !formVis) {
+      getHighscores();
     }
-  };
+  }, [
+    AppleLogo,
+    snake,
+    apple,
+    gameOver,
+    eatenApples,
+    input,
+    formVis,
+    getHighscores,
+  ]);
+
   const handleSubmit = () => {
     console.log(input);
     postHighscores(input, score);
@@ -98,7 +104,7 @@ function App() {
     setInput("");
   };
   function handleKeyDown(e: React.KeyboardEvent) {
-    if (e.key === 'Enter') {
+    if (e.key === "Enter") {
       handleSubmit();
       setFormVis(false);
     }
@@ -125,7 +131,7 @@ function App() {
   function checkCollision(head: number[]) {
     // Green apple: snake can travel through walls
     if (eatenApples[0] === AppleGreen) {
-      for (let i = 0; i < head.length; i++) {  
+      for (let i = 0; i < head.length; i++) {
         // if the snake goes through the left/right wall
         if (head[0] < 0) {
           head[0] = screenWidth / scale - 1;
@@ -234,7 +240,7 @@ function App() {
     if (checkCollision(newSnakeHead)) {
       setDelay(null);
       setGameOver(true);
-      console.log('game over')
+      console.log("game over");
       if (highscores.length < 10 || score > highscores[9].highscore) {
         setFormVis(true);
       }
@@ -283,7 +289,7 @@ function App() {
   //         {highscores.slice(0,10).map((el) => <li key={el.id}>{el.name}  {el.highscore}</li>)}
   //       </ol>
   //     </div>
-  //     {formVis 
+  //     {formVis
   //     &&
   //     <>
   //       <h1 className="gameOver" >Congrats you made it on to the top highscores!</h1>
@@ -308,55 +314,58 @@ function App() {
 
   return (
     <>
-        <div onKeyDown={(e) => changeDirection(e)}>
-          <img id="fruit" src={AppleLogo} alt="fruit" width="30" />
-          <canvas
-            className={canvas[1]}
-            ref={canvasRef}
-            width={`${screenWidth}px`}
-            height={`${screenHeight}px`}
-          />
-          {/* {gameOver && <div className="gameOver">Game Over</div>} */}
-          {gameOver && (
-            <div className="highscoreList">
-              <h1>Highscores</h1>
-              <table className="highscoreTable">
-                <tbody>
-                  {highscores.slice(0, 10).map((el, index) => (
-                    <tr key={index}>
-                      <td>{index + 1}</td>
-                      <td>{el.name}</td>
-                      <td>{el.highscore}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-          {formVis 
-            &&
-            <div>
-              <h1 className="inputHighscoreText" >Congrats you have a top score!</h1>
-              <input
-                type="text"
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                onKeyDown={handleKeyDown}
-                placeholder="Write your name"
-                maxLength={10}
-                className="inputHighscore"
-              />
-              {input.length>0 && <h1 className="enterText" >Press ENTER to add</h1>}
-            </div>
-            }
-          <button onClick={play} className="playButton">
-            Play
-          </button>
-          <div className="scoreBox">
-            <h2>Score: {score}</h2>
-            <h2>High Score: {localStorage.getItem("snakeScore")}</h2>
+      <div onKeyDown={(e) => changeDirection(e)}>
+        <img id="fruit" src={AppleLogo} alt="fruit" width="30" />
+        <canvas
+          className={canvas[1]}
+          ref={canvasRef}
+          width={`${screenWidth}px`}
+          height={`${screenHeight}px`}
+        />
+        {/* {gameOver && <div className="gameOver">Game Over</div>} */}
+        {gameOver && (
+          <div className="highscoreList">
+            <h1>Highscores</h1>
+            <table className="highscoreTable">
+              <tbody>
+                {highscores.slice(0, 10).map((el, index) => (
+                  <tr key={index}>
+                    <td>{index + 1}</td>
+                    <td>{el.name}</td>
+                    <td>{el.highscore}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
+        )}
+        {formVis && (
+          <div>
+            <h1 className="inputHighscoreText">
+              Congrats you have a top score!
+            </h1>
+            <input
+              type="text"
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={handleKeyDown}
+              placeholder="Write your name"
+              maxLength={10}
+              className="inputHighscore"
+            />
+            {input.length > 0 && (
+              <h1 className="enterText">Press ENTER to add</h1>
+            )}
+          </div>
+        )}
+        <button onClick={play} className="playButton">
+          Play
+        </button>
+        <div className="scoreBox">
+          <h2>Score: {score}</h2>
+          <h2>High Score: {localStorage.getItem("snakeScore")}</h2>
         </div>
+      </div>
     </>
   );
 }
