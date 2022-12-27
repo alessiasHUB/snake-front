@@ -336,7 +336,7 @@ function App() {
           {formVis 
             &&
             <div>
-              <h1 className="inputHighscoreText" >Congrats you you have a top score!</h1>
+              <h1 className="inputHighscoreText" >Congrats you have a top score!</h1>
               <input
                 type="text"
                 value={input}
