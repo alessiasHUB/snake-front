@@ -125,13 +125,29 @@ h2 {
   color: rgb(255, 255, 255);
   font-size: 25px;
   text-align: center;
+  width: 500px;
 }
 .inputHighscore {
-  position: fixed;
-  top: 70%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  color: rgb(0, 0, 0);
-  font-size: 20px;
-  text-align: center;
+ 	position: fixed;
+ 	top: 70%;
+  	left: 50%;
+ 	transform: translate(-50%, -50%);
+  	color: rgb(0, 0, 0);
+  	font-size: 20px;
+	text-align: center;
+	border: 5px solid black;
+}
+.enterText {
+	position: fixed;
+	top: 73%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	color: rgb(96, 216, 11);
+	font-size: 20px;
+	text-align: center;
+	width: 500px;
+}
+
+td {
+	padding: 1px 10px;
 }

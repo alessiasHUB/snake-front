@@ -336,16 +336,17 @@ function App() {
           {formVis 
             &&
             <div>
-              <h1 className="inputHighscoreText" >Congrats you made it on to the highscores!</h1>
-              {/* add so the input can be max 10 characters long */}
-                <input
-                  type="text"
-                  value={input}
-                  onChange={(e) => setInput(e.target.value)}
-                  onKeyDown={handleKeyDown}
-                  placeholder="Write your name"
-                  className="inputHighscore"
-                />
+              <h1 className="inputHighscoreText" >Congrats you you have a top score!</h1>
+              <input
+                type="text"
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                onKeyDown={handleKeyDown}
+                placeholder="Write your name"
+                maxLength={10}
+                className="inputHighscore"
+              />
+              {input.length>0 && <h1 className="enterText" >Press ENTER to add</h1>}
             </div>
             }
           <button onClick={play} className="playButton">
