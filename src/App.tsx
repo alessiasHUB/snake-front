@@ -69,7 +69,7 @@ function App() {
       }
     } 
     // getHighscores()
-  }, [AppleLogo, snake, apple, gameOver, eatenApples, input, formVis]);
+  }, [AppleLogo, snake, apple, gameOver, eatenApples, input, formVis, highscores.length]);
 
   //GET highscores from API
   const getHighscores = async () => {
@@ -104,6 +104,7 @@ function App() {
     }
   }
 
+  // local storage highscore
   function handleSetScore() {
     if (score > Number(localStorage.getItem("snakeScore"))) {
       localStorage.setItem("snakeScore", JSON.stringify(score));
@@ -120,6 +121,7 @@ function App() {
     setFormVis(false);
   }
 
+  // apple rules
   function checkCollision(head: number[]) {
     // Green apple: snake can travel through walls
     if (eatenApples[0] === AppleGreen) {
@@ -235,7 +237,6 @@ function App() {
       console.log('game over')
       if (highscores.length < 10 || score > highscores[9].highscore) {
         setFormVis(true);
-        console.log('setFormVis is true');
       }
       handleSetScore();
       getHighscores();
@@ -336,7 +337,7 @@ function App() {
             &&
             <div>
               <h1 className="inputHighscoreText" >Congrats you made it on to the highscores!</h1>
-              {/* <form id='form' onSubmit={handleSubmit}> */}
+              {/* add so the input can be max 10 characters long */}
                 <input
                   type="text"
                   value={input}
@@ -345,11 +346,6 @@ function App() {
                   placeholder="Write your name"
                   className="inputHighscore"
                 />
-                {/* <span> </span>
-                <button type="submit" className="add-button">
-                  +
-                </button>
-              </form> */}
             </div>
             }
           <button onClick={play} className="playButton">
