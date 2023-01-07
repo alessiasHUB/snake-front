@@ -4,6 +4,23 @@ body {
   font-family: "Press Start 2P", cursive;
 }
 
+nav {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  padding: 15px 15px 15px 0;
+  /* height: 50px ; */
+  color: white;
+}
+.nav-text {
+  color: white;
+  padding-left: 30px;
+  text-decoration: none;
+}
+.nav-text:hover {
+  color: greenyellow;
+}
+
 .red {
   width: 585px;
   height: 440px;
@@ -50,14 +67,18 @@ body {
   display: none;
 }
 
-/* .monitor {
-	width: 800px;
-	height: 800px;
-	position: fixed;
-	top: 50%;
-	left: 50%;
-	transform: translate(-50%, -50%);
-} */
+.rules {
+  position: fixed;
+  top: 43.2%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  font-size: 20px;
+  width: 500px;
+}
+.rules > h2 {
+  font-size: 40px;
+}
 
 .gameOver {
   position: fixed;
@@ -128,26 +149,26 @@ h2 {
   width: 500px;
 }
 .inputHighscore {
- 	position: fixed;
- 	top: 70%;
-  	left: 50%;
- 	transform: translate(-50%, -50%);
-  	color: rgb(0, 0, 0);
-  	font-size: 20px;
-	text-align: center;
-	border: 5px solid black;
+  position: fixed;
+  top: 70%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: rgb(0, 0, 0);
+  font-size: 20px;
+  text-align: center;
+  border: 5px solid black;
 }
 .enterText {
-	position: fixed;
-	top: 73%;
-	left: 50%;
-	transform: translate(-50%, -50%);
-	color: rgb(96, 216, 11);
-	font-size: 20px;
-	text-align: center;
-	width: 500px;
+  position: fixed;
+  top: 73%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: rgb(96, 216, 11);
+  font-size: 20px;
+  text-align: center;
+  width: 500px;
 }
 
 td {
-	padding: 1px 10px;
+  padding: 1px 10px;
 }

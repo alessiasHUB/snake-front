@@ -1,7 +1,10 @@
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
-import App from './App';
+import Game from './components/Game';
+import Rules from "./components/Rules";
+import NavBar from "./components/NavBar";
 import reportWebVitals from './reportWebVitals';
 
 const root = ReactDOM.createRoot(
@@ -9,7 +12,13 @@ const root = ReactDOM.createRoot(
 );
 root.render(
   <React.StrictMode>
-    <App />
+    <Router>
+        <NavBar />
+        <Routes>
+          <Route path="/" element={<Game />} />
+          <Route path="/rules" element={<Rules />} />
+        </Routes>
+      </Router>
   </React.StrictMode>
 );
 

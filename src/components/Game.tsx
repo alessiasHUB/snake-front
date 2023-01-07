@@ -1,10 +1,10 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import "./App.css";
+import "../App.css";
 import useInterval from "./useInterval";
-import AppleRed from "./img/apple-red.png";
-import AppleGreen from "./img/apple-green.png";
-import AppleYellow from "./img/apple-yellow.png";
-import AppleBlue from "./img/apple-blue.png";
+import AppleRed from "../img/apple-red.png";
+import AppleGreen from "../img/apple-green.png";
+import AppleYellow from "../img/apple-yellow.png";
+import AppleBlue from "../img/apple-blue.png";
 import axios from "axios";
 
 const screenWidth = 1200;
@@ -24,12 +24,14 @@ interface Highscore {
   name: string;
 }
 
+export interface IGameProps {}
+
 const url =
   process.env.NODE_ENV === "production"
     ? "https://snake-back.onrender.com"
     : "http://localhost:4000";
 
-function App() {
+const Game: React.FunctionComponent<IGameProps> = (props) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [snake, setSnake] = useState(initialSnake);
   const [apple, setApple] = useState(initialApple);
@@ -370,4 +372,4 @@ function App() {
   );
 }
 
-export default App;
+export default Game;
